@@ -1,0 +1,85 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyOQixc9CU+TODPkAkHNiGvb",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/rakshmitha04/CSA6102/blob/main/Lab%20/EXP%2017\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "3DUdvgVKgH6w",
+        "outputId": "a6014bc2-d782-4598-e855-00202b00d243"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "PHISHING REPORT\n",
+            "-------------------------\n",
+            "Spoofed Sender: True\n",
+            "Suspicious URLs: 2\n",
+            "Urgent Keywords: 4\n",
+            "Risk Score: 90 /100\n",
+            "Risk Level: HIGH\n"
+          ]
+        }
+      ],
+      "source": [
+        "risk_score = 0\n",
+        "\n",
+        "spoofed_sender = True\n",
+        "suspicious_urls = 2\n",
+        "urgent_keywords = 4\n",
+        "\n",
+        "if spoofed_sender:\n",
+        "    risk_score += 30\n",
+        "\n",
+        "risk_score += suspicious_urls * 20\n",
+        "risk_score += urgent_keywords * 5\n",
+        "\n",
+        "risk_score = min(risk_score, 100)\n",
+        "\n",
+        "print(\"PHISHING REPORT\")\n",
+        "print(\"-------------------------\")\n",
+        "print(\"Spoofed Sender:\", spoofed_sender)\n",
+        "print(\"Suspicious URLs:\", suspicious_urls)\n",
+        "print(\"Urgent Keywords:\", urgent_keywords)\n",
+        "print(\"Risk Score:\", risk_score, \"/100\")\n",
+        "\n",
+        "if risk_score >= 70:\n",
+        "    print(\"Risk Level: HIGH\")\n",
+        "elif risk_score >= 40:\n",
+        "    print(\"Risk Level: MEDIUM\")\n",
+        "else:\n",
+        "    print(\"Risk Level: LOW\")"
+      ]
+    }
+  ]
+}
