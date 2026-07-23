@@ -1,0 +1,91 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyP09hHJ4bF7c+lLZrYGMMSB",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/rakshmitha04/CSA6102/blob/main/Lab%20/EXP%2016\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "UD2uyMdwfipK",
+        "outputId": "812ddbc1-e563-4ca4-f391-ef1610e07b98"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\n",
+            "URL: https://paypal.com/login\n",
+            "Classification: Legitimate\n",
+            "\n",
+            "URL: https://paypa1-login-security.com/verify\n",
+            "Classification: Suspicious\n",
+            "- Hyphen found\n",
+            "- Possible Typosquatting\n",
+            "\n",
+            "URL: http://192.168.1.10/login\n",
+            "Classification: Suspicious\n",
+            "- Uses HTTP\n"
+          ]
+        }
+      ],
+      "source": [
+        "from urllib.parse import urlparse\n",
+        "\n",
+        "urls = [\n",
+        "    \"https://paypal.com/login\",\n",
+        "    \"https://paypa1-login-security.com/verify\",\n",
+        "    \"http://192.168.1.10/login\"\n",
+        "]\n",
+        "\n",
+        "trusted_domains = [\"paypal.com\"]\n",
+        "\n",
+        "for url in urls:\n",
+        "    domain = urlparse(url).netloc\n",
+        "\n",
+        "    print(\"\\nURL:\", url)\n",
+        "\n",
+        "    if domain in trusted_domains:\n",
+        "        print(\"Classification: Legitimate\")\n",
+        "    else:\n",
+        "        print(\"Classification: Suspicious\")\n",
+        "\n",
+        "        if \"-\" in domain:\n",
+        "            print(\"- Hyphen found\")\n",
+        "\n",
+        "        if url.startswith(\"http://\"):\n",
+        "            print(\"- Uses HTTP\")\n",
+        "\n",
+        "        if \"paypa1\" in domain:\n",
+        "            print(\"- Possible Typosquatting\")"
+      ]
+    }
+  ]
+}
