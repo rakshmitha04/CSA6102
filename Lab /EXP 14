@@ -1,0 +1,129 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyNDiV+yr0zPxVirB4IMUdbx",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/rakshmitha04/CSA6102/blob/main/Lab%20/EXP%2014\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "BVMGubNNcsHh",
+        "outputId": "0f3d9c56-0fa6-4d3b-9e1e-aab4aec8bbbf"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "{'filename': 'browser_history.txt', 'size_bytes': 56, 'md5': '7804eb386588e70e52f8e44985aae9ab'}\n",
+            "{'filename': 'chat_message.txt', 'size_bytes': 27, 'md5': 'e5f0758dbf1fe3c48005ea2560fa5279'}\n",
+            "{'filename': 'email_log.txt', 'size_bytes': 84, 'md5': '94d472f8d614b91afc7ab2f56ddb435d'}\n",
+            "{'filename': 'system_log.txt', 'size_bytes': 47, 'md5': '5731691a0851b79317771c6e09f5c53b'}\n",
+            "\n",
+            "Experiment 1: All test cases passed.\n"
+          ]
+        }
+      ],
+      "source": [
+        "import os\n",
+        "import hashlib\n",
+        "\n",
+        "# Create evidence directory\n",
+        "evidence_dir = \"digital_evidence\"\n",
+        "os.makedirs(evidence_dir, exist_ok=True)\n",
+        "\n",
+        "# Sample evidence\n",
+        "sample_evidence = {\n",
+        "    \"email_log.txt\": \"\"\"From: attacker@mail.com\n",
+        "To: victim@mail.com\n",
+        "Subject: Invoice\n",
+        "Please pay immediately.\"\"\",\n",
+        "\n",
+        "    \"browser_history.txt\": \"\"\"http://malicious-site.com/login\n",
+        "http://bank.com/transfer\"\"\",\n",
+        "\n",
+        "    \"chat_message.txt\": \"Hey, did you send the file?\",\n",
+        "\n",
+        "    \"system_log.txt\": \"2026-07-24 10:15:32 - USB device connected: E:\\\\\"\n",
+        "}\n",
+        "\n",
+        "# Create files\n",
+        "for filename, content in sample_evidence.items():\n",
+        "    with open(os.path.join(evidence_dir, filename), \"w\") as f:\n",
+        "        f.write(content)\n",
+        "\n",
+        "# Catalog function\n",
+        "def catalog_evidence(folder):\n",
+        "    catalog = []\n",
+        "\n",
+        "    for fname in sorted(os.listdir(folder)):\n",
+        "        path = os.path.join(folder, fname)\n",
+        "\n",
+        "        stat = os.stat(path)\n",
+        "\n",
+        "        with open(path, \"rb\") as f:\n",
+        "            data = f.read()\n",
+        "\n",
+        "        catalog.append({\n",
+        "            \"filename\": fname,\n",
+        "            \"size_bytes\": stat.st_size,\n",
+        "            \"md5\": hashlib.md5(data).hexdigest()\n",
+        "        })\n",
+        "\n",
+        "    return catalog\n",
+        "\n",
+        "# Generate catalog\n",
+        "evidence_catalog = catalog_evidence(evidence_dir)\n",
+        "\n",
+        "# Print catalog\n",
+        "for item in evidence_catalog:\n",
+        "    print(item)\n",
+        "\n",
+        "# Test Cases\n",
+        "def test_experiment1():\n",
+        "    assert os.path.isdir(evidence_dir)\n",
+        "\n",
+        "    assert len(evidence_catalog) == len(sample_evidence)\n",
+        "\n",
+        "    filenames = [e[\"filename\"] for e in evidence_catalog]\n",
+        "\n",
+        "    for expected in sample_evidence:\n",
+        "        assert expected in filenames\n",
+        "\n",
+        "    for entry in evidence_catalog:\n",
+        "        assert entry[\"size_bytes\"] > 0\n",
+        "        assert len(entry[\"md5\"]) == 32\n",
+        "\n",
+        "    print(\"\\nExperiment 1: All test cases passed.\")\n",
+        "\n",
+        "test_experiment1()"
+      ]
+    }
+  ]
+}
