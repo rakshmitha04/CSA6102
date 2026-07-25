@@ -1,0 +1,132 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyNqz52iOYZESO77lJ+cAJ4r",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/rakshmitha04/CSA6102/blob/main/Lab%20/EXP%2016\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "lNFa1BLJd6VL",
+        "outputId": "8a8d61e4-cc9d-4986-cc55-21eec6616eda"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Physical image size: 68 bytes\n",
+            "Logical image files: ['report.docx', 'photo.jpg']\n",
+            "Sparse image files: ['report.docx']\n",
+            "\n",
+            "Experiment 3: All test cases passed.\n"
+          ]
+        }
+      ],
+      "source": [
+        "import os\n",
+        "\n",
+        "# Create folders\n",
+        "os.makedirs(\"acquisition_demo/source\", exist_ok=True)\n",
+        "\n",
+        "source = \"acquisition_demo/source\"\n",
+        "\n",
+        "# Create sample files\n",
+        "with open(os.path.join(source, \"report.docx\"), \"w\") as f:\n",
+        "    f.write(\"Confidential quarterly report.\")\n",
+        "\n",
+        "with open(os.path.join(source, \"photo.jpg\"), \"w\") as f:\n",
+        "    f.write(\"FAKEJPEGDATA\")\n",
+        "\n",
+        "# Simulated raw disk\n",
+        "raw_disk = (\n",
+        "    b\"REPORTDOCX_CONTENT\"\n",
+        "    + b\"\\x00\" * 20\n",
+        "    + b\"DELETED_INVOICE_DATA\"\n",
+        "    + b\"\\x00\" * 10\n",
+        ")\n",
+        "\n",
+        "# Physical acquisition\n",
+        "def physical_acquisition(raw_bytes):\n",
+        "    return bytes(raw_bytes)\n",
+        "\n",
+        "# Logical acquisition\n",
+        "def logical_acquisition(folder):\n",
+        "    image = {}\n",
+        "\n",
+        "    for file in os.listdir(folder):\n",
+        "        with open(os.path.join(folder, file), \"rb\") as f:\n",
+        "            image[file] = f.read()\n",
+        "\n",
+        "    return image\n",
+        "\n",
+        "# Sparse acquisition\n",
+        "def sparse_acquisition(folder, targets):\n",
+        "    image = {}\n",
+        "\n",
+        "    for file in targets:\n",
+        "        if file in os.listdir(folder):\n",
+        "            with open(os.path.join(folder, file), \"rb\") as f:\n",
+        "                image[file] = f.read()\n",
+        "\n",
+        "    return image\n",
+        "\n",
+        "# Acquire images\n",
+        "physical_image = physical_acquisition(raw_disk)\n",
+        "logical_image = logical_acquisition(source)\n",
+        "sparse_image = sparse_acquisition(source, [\"report.docx\"])\n",
+        "\n",
+        "# Print results\n",
+        "print(\"Physical image size:\", len(physical_image), \"bytes\")\n",
+        "print(\"Logical image files:\", list(logical_image.keys()))\n",
+        "print(\"Sparse image files:\", list(sparse_image.keys()))\n",
+        "\n",
+        "# Test Cases\n",
+        "def test_experiment3():\n",
+        "\n",
+        "    assert physical_image == raw_disk\n",
+        "\n",
+        "    assert b\"DELETED_INVOICE_DATA\" in physical_image\n",
+        "\n",
+        "    assert set(logical_image.keys()) == {\n",
+        "        \"report.docx\",\n",
+        "        \"photo.jpg\"\n",
+        "    }\n",
+        "\n",
+        "    assert set(sparse_image.keys()) == {\n",
+        "        \"report.docx\"\n",
+        "    }\n",
+        "\n",
+        "    print(\"\\nExperiment 3: All test cases passed.\")\n",
+        "\n",
+        "test_experiment3()"
+      ]
+    }
+  ]
+}
