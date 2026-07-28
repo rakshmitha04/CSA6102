@@ -1,0 +1,113 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyOO9+CP7Ib4hY7Ry4ASdM4P",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/rakshmitha04/CSA6102/blob/main/Lab%20/EXP%2025\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "C06_gogKATCr",
+        "outputId": "50a7def1-5f3c-4cb7-886a-ad177f861fc5"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Recovered 2 file(s) via carving\n",
+            "Experiment 8: All test cases passed.\n"
+          ]
+        }
+      ],
+      "source": [
+        "import os\n",
+        "\n",
+        "# Create a fake JPEG file\n",
+        "def make_fake_jpeg(payload: bytes):\n",
+        "    return b\"\\xff\\xd8\\xff\" + payload + b\"\\xff\\xd9\"\n",
+        "\n",
+        "# Simulated deleted JPEG files\n",
+        "jpeg1 = make_fake_jpeg(b\"PHOTO_OF_SUSPECT_CAR\")\n",
+        "jpeg2 = make_fake_jpeg(b\"CCTV_FRAME_CAPTURE\")\n",
+        "\n",
+        "# Simulated raw disk containing random data and deleted JPEGs\n",
+        "raw_disk_blob = (\n",
+        "    os.urandom(30)\n",
+        "    + jpeg1\n",
+        "    + os.urandom(40)\n",
+        "    + jpeg2\n",
+        "    + os.urandom(20)\n",
+        ")\n",
+        "\n",
+        "# File carving function\n",
+        "def carve_jpegs(blob: bytes):\n",
+        "    recovered = []\n",
+        "    start_marker = b\"\\xff\\xd8\\xff\"\n",
+        "    end_marker = b\"\\xff\\xd9\"\n",
+        "\n",
+        "    pos = 0\n",
+        "    while True:\n",
+        "        start = blob.find(start_marker, pos)\n",
+        "        if start == -1:\n",
+        "            break\n",
+        "\n",
+        "        end = blob.find(end_marker, start)\n",
+        "        if end == -1:\n",
+        "            break\n",
+        "\n",
+        "        end += len(end_marker)\n",
+        "        recovered.append(blob[start:end])\n",
+        "        pos = end\n",
+        "\n",
+        "    return recovered\n",
+        "\n",
+        "# Recover files\n",
+        "recovered_files = carve_jpegs(raw_disk_blob)\n",
+        "\n",
+        "print(\"Recovered\", len(recovered_files), \"file(s) via carving\")\n",
+        "\n",
+        "# Test Cases\n",
+        "def test_experiment8():\n",
+        "    assert len(recovered_files) == 2, \\\n",
+        "        \"File carving should recover exactly 2 embedded JPEGs\"\n",
+        "\n",
+        "    assert recovered_files[0] == jpeg1, \\\n",
+        "        \"First recovered file must exactly match the original embedded JPEG\"\n",
+        "\n",
+        "    assert recovered_files[1] == jpeg2, \\\n",
+        "        \"Second recovered file must exactly match the original embedded JPEG\"\n",
+        "\n",
+        "    print(\"Experiment 8: All test cases passed.\")\n",
+        "\n",
+        "test_experiment8()"
+      ]
+    }
+  ]
+}
