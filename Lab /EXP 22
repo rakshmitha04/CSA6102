@@ -1,0 +1,99 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyNQ+tVPjj+A8S1LEEujxtRn",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/rakshmitha04/CSA6102/blob/main/Lab%20/EXP%2022\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "ef3BLqn_71Bu",
+        "outputId": "229c3ad8-fc13-4ff6-a0d7-fcdd59ad2376"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Forensic image size: 72\n",
+            "Duplication size: 9\n",
+            "Experiment 5: All test cases passed.\n"
+          ]
+        }
+      ],
+      "source": [
+        "# Simulated raw disk:\n",
+        "# Active file + free space + deleted file + free space\n",
+        "raw_disk_full = (\n",
+        "    b\"FILE1DATA\"\n",
+        "    + b\"\\x00\" * 15\n",
+        "    + b\"DELETED_FILE_DATA\"\n",
+        "    + b\"\\x00\" * 15\n",
+        "    + b\"FREE_SPACE_00000\"\n",
+        ")\n",
+        "\n",
+        "# Forensic Imaging\n",
+        "def create_forensic_image(raw_bytes):\n",
+        "    return bytes(raw_bytes)  # Bit-for-bit copy\n",
+        "\n",
+        "# Ordinary Duplication\n",
+        "def create_duplication(raw_bytes, active_regions):\n",
+        "    return b\"\".join(raw_bytes[start:end] for start, end in active_regions)\n",
+        "\n",
+        "# Only active (live) file region\n",
+        "active_regions = [(0, 9)]\n",
+        "\n",
+        "# Create copies\n",
+        "forensic_image = create_forensic_image(raw_disk_full)\n",
+        "duplication_copy = create_duplication(raw_disk_full, active_regions)\n",
+        "\n",
+        "print(\"Forensic image size:\", len(forensic_image))\n",
+        "print(\"Duplication size:\", len(duplication_copy))\n",
+        "\n",
+        "# Test Cases\n",
+        "def test_experiment5():\n",
+        "    assert len(forensic_image) == len(raw_disk_full), \\\n",
+        "        \"Imaging must capture the full storage device size\"\n",
+        "\n",
+        "    assert b\"DELETED_FILE_DATA\" in forensic_image, \\\n",
+        "        \"Imaging must include deleted data\"\n",
+        "\n",
+        "    assert b\"DELETED_FILE_DATA\" not in duplication_copy, \\\n",
+        "        \"Duplication must exclude deleted data\"\n",
+        "\n",
+        "    assert len(duplication_copy) < len(forensic_image), \\\n",
+        "        \"Duplication should be smaller than a full image\"\n",
+        "\n",
+        "    print(\"Experiment 5: All test cases passed.\")\n",
+        "\n",
+        "test_experiment5()"
+      ]
+    }
+  ]
+}
