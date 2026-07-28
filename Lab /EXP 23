@@ -1,0 +1,93 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyPI09hROHhFSmcClnOsXeF7",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/rakshmitha04/CSA6102/blob/main/Lab%20/EXP%2023\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 2,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "z0YQK5up8fjE",
+        "outputId": "c1cb203e-e7f3-4d7e-f68d-8ed6163454a9"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Original hash: 5e87949c4df68b9839478975aa3e962e71cb3d05e1111730e3c084ce0d4f94ae\n",
+            "Copy hash:     5e87949c4df68b9839478975aa3e962e71cb3d05e1111730e3c084ce0d4f94ae\n",
+            "Experiment 6: All test cases passed.\n"
+          ]
+        }
+      ],
+      "source": [
+        "import os\n",
+        "import hashlib\n",
+        "\n",
+        "# Create a simulated storage device (1 KB)\n",
+        "original_path = \"original_evidence.bin\"\n",
+        "\n",
+        "with open(original_path, \"wb\") as f:\n",
+        "    f.write(os.urandom(1024))\n",
+        "\n",
+        "# Bit Stream Copy\n",
+        "def bit_stream_copy(src_path, dst_path):\n",
+        "    with open(src_path, \"rb\") as src, open(dst_path, \"wb\") as dst:\n",
+        "        dst.write(src.read())\n",
+        "\n",
+        "copy_path = \"bitstream_copy.bin\"\n",
+        "bit_stream_copy(original_path, copy_path)\n",
+        "\n",
+        "# SHA-256 Hash Function\n",
+        "def sha256_of_file(path):\n",
+        "    with open(path, \"rb\") as f:\n",
+        "        return hashlib.sha256(f.read()).hexdigest()\n",
+        "\n",
+        "original_hash = sha256_of_file(original_path)\n",
+        "copy_hash = sha256_of_file(copy_path)\n",
+        "\n",
+        "print(\"Original hash:\", original_hash)\n",
+        "print(\"Copy hash:    \", copy_hash)\n",
+        "\n",
+        "# Test Cases\n",
+        "def test_experiment6():\n",
+        "    assert os.path.getsize(original_path) == os.path.getsize(copy_path), \\\n",
+        "        \"Bit stream copy must match original size exactly\"\n",
+        "\n",
+        "    assert original_hash == copy_hash, \\\n",
+        "        \"Hashes must match, proving the copy is forensically identical\"\n",
+        "\n",
+        "    print(\"Experiment 6: All test cases passed.\")\n",
+        "\n",
+        "test_experiment6()"
+      ]
+    }
+  ]
+}
