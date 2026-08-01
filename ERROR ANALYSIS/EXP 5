@@ -1,0 +1,78 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyP7mUF+EJwNR394IDi968t4",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/rakshmitha04/CSA6102/blob/main/ERROR%20ANALYSIS/EXP%205\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 4,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "G4xV6EN6deCb",
+        "outputId": "e648909c-fac4-4c2d-b7af-90256135fcb7"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Match: Evidence integrity verified\n"
+          ]
+        }
+      ],
+      "source": [
+        "import hashlib\n",
+        "\n",
+        "# Create a sample evidence file\n",
+        "with open(\"evidence_image.dd\", \"wb\") as f:\n",
+        "    f.write(b\"This is sample forensic evidence.\")\n",
+        "\n",
+        "def compute_hash(filepath):\n",
+        "    hasher = hashlib.sha256()\n",
+        "\n",
+        "    with open(filepath, \"rb\") as f:\n",
+        "        content = f.read()\n",
+        "\n",
+        "    hasher.update(content)\n",
+        "\n",
+        "    return hasher.hexdigest()\n",
+        "\n",
+        "def verify_integrity(filepath):\n",
+        "    hash_at_collection = compute_hash(filepath)\n",
+        "    hash_before_analysis = compute_hash(filepath)\n",
+        "\n",
+        "    if hash_at_collection == hash_before_analysis:\n",
+        "        print(\"Match: Evidence integrity verified\")\n",
+        "    else:\n",
+        "        print(\"Mismatch: Evidence may be compromised\")\n",
+        "\n",
+        "verify_integrity(\"evidence_image.dd\")"
+      ]
+    }
+  ]
+}
