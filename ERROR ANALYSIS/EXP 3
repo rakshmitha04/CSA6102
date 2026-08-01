@@ -1,0 +1,78 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyMaQPHpJH8A47MGK6j5TtZf",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/rakshmitha04/CSA6102/blob/main/ERROR%20ANALYSIS/EXP%203\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "TLfA1Zw-bAAh",
+        "outputId": "29dc6786-b377-4638-d895-d58e1ba14635"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "http://192.168.1.10/verify-account -> True\n",
+            "https://mybank.com/login -> True\n"
+          ]
+        }
+      ],
+      "source": [
+        "import re\n",
+        "\n",
+        "def is_suspicious(url):\n",
+        "    ip_pattern = r'\\d+\\.\\d+\\.\\d+\\.\\d+'\n",
+        "    suspicious_words = ('verify', 'update', 'secure', 'login')\n",
+        "\n",
+        "    # IP-based URL is suspicious\n",
+        "    if re.search(ip_pattern, url):\n",
+        "        return True\n",
+        "\n",
+        "    # If ANY suspicious keyword is present\n",
+        "    for word in suspicious_words:\n",
+        "        if word in url:\n",
+        "            return True\n",
+        "\n",
+        "    return False\n",
+        "\n",
+        "\n",
+        "urls = [\n",
+        "    'http://192.168.1.10/verify-account',\n",
+        "    'https://mybank.com/login'\n",
+        "]\n",
+        "\n",
+        "for u in urls:\n",
+        "    print(u, '->', is_suspicious(u))"
+      ]
+    }
+  ]
+}
