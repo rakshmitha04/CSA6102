@@ -1,0 +1,74 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyPXG967yVlgRHnm/lbrEvLd",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/rakshmitha04/CSA6102/blob/main/ERROR%20ANALYSIS/EXP%202\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Ozm1VyN-Yh43",
+        "outputId": "83c64709-297a-4980-82b4-6262c20fb88a"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Phishing\n"
+          ]
+        }
+      ],
+      "source": [
+        "def classify_incident(description):\n",
+        "    categories = {\n",
+        "        'Phishing': ['fake email', 'login link', 'credential'],\n",
+        "        'Ransomware': ['encrypted files', 'ransom note', 'bitcoin'],\n",
+        "        'Identity Theft': ['stolen identity', 'aadhaar', 'pan card'],\n",
+        "        'Cyberstalking': ['online harassment', 'threatening messages', 'social media stalking']\n",
+        "    }\n",
+        "\n",
+        "    # Convert the description to lowercase\n",
+        "    description = description.lower()\n",
+        "\n",
+        "    # Iterate through dictionary items\n",
+        "    for category, keywords in categories.items():\n",
+        "        for word in keywords:\n",
+        "            if word in description:\n",
+        "                return category\n",
+        "\n",
+        "    return 'Unclassified'\n",
+        "\n",
+        "\n",
+        "result = classify_incident(\"Victim received a fake email with a login link\")\n",
+        "print(result)"
+      ]
+    }
+  ]
+}
