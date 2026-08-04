@@ -1,0 +1,135 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyM159UZ9uaCAwMaCUx6uf7E",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/rakshmitha04/CSA6102/blob/main/Lab%20/EXP%2032\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "id": "E3_pZDM39mdh"
+      },
+      "outputs": [],
+      "source": [
+        "from datetime import datetime\n",
+        "\n",
+        "TS_FMT = \"%Y-%m-%d %H:%M:%S\"\n",
+        "\n",
+        "def detect_timestomping(file_meta, change_gap_minutes=60):\n",
+        "\n",
+        "    modified = datetime.strptime(file_meta[\"modified\"], TS_FMT)\n",
+        "    accessed = datetime.strptime(file_meta[\"accessed\"], TS_FMT)\n",
+        "    changed = datetime.strptime(file_meta[\"changed\"], TS_FMT)\n",
+        "    born = datetime.strptime(file_meta[\"born\"], TS_FMT)\n",
+        "\n",
+        "    reasons = []\n",
+        "\n",
+        "    if modified < born:\n",
+        "        reasons.append(\"Modified time is earlier than Born (creation) time\")\n",
+        "\n",
+        "    if accessed < born:\n",
+        "        reasons.append(\"Accessed time is earlier than Born (creation) time\")\n",
+        "\n",
+        "    gap_minutes = abs((changed - modified).total_seconds()) / 60\n",
+        "\n",
+        "    if changed > modified and gap_minutes > change_gap_minutes:\n",
+        "        reasons.append(\n",
+        "            f\"MFT Changed time is {gap_minutes:.0f} minutes after Modified time - metadata may have been altered after the fact\"\n",
+        "        )\n",
+        "\n",
+        "    return len(reasons) > 0, reasons"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def test_experiment4():\n",
+        "\n",
+        "    normal_file = {\n",
+        "        \"born\": \"2026-01-10 09:00:00\",\n",
+        "        \"modified\": \"2026-01-10 09:05:00\",\n",
+        "        \"accessed\": \"2026-01-12 14:00:00\",\n",
+        "        \"changed\": \"2026-01-10 09:05:00\",\n",
+        "    }\n",
+        "\n",
+        "    tampered_file = {\n",
+        "        \"born\": \"2026-02-01 12:00:00\",\n",
+        "        \"modified\": \"2020-01-01 00:00:00\",\n",
+        "        \"accessed\": \"2026-02-01 12:00:00\",\n",
+        "        \"changed\": \"2026-02-01 12:03:00\",\n",
+        "    }\n",
+        "\n",
+        "    # Test normal file\n",
+        "    is_susp1, reasons1 = detect_timestomping(normal_file)\n",
+        "    print(\"Normal File:\")\n",
+        "    print(\"Suspicious:\", is_susp1)\n",
+        "    print(\"Reasons:\", reasons1)\n",
+        "\n",
+        "    assert is_susp1 == False\n",
+        "\n",
+        "    # Test tampered file\n",
+        "    is_susp2, reasons2 = detect_timestomping(tampered_file)\n",
+        "    print(\"\\nTampered File:\")\n",
+        "    print(\"Suspicious:\", is_susp2)\n",
+        "    print(\"Reasons:\", reasons2)\n",
+        "\n",
+        "    assert is_susp2 == True\n",
+        "    assert any(\"Modified time is earlier\" in r for r in reasons2)\n",
+        "\n",
+        "    print(\"\\nAll test cases passed.\")\n",
+        "\n",
+        "\n",
+        "# Run the test\n",
+        "test_experiment4()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "rcWiFM_i-BzZ",
+        "outputId": "eb113039-ca24-48e0-e69a-3059819b5488"
+      },
+      "execution_count": 2,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Normal File:\n",
+            "Suspicious: False\n",
+            "Reasons: []\n",
+            "\n",
+            "Tampered File:\n",
+            "Suspicious: True\n",
+            "Reasons: ['Modified time is earlier than Born (creation) time', 'MFT Changed time is 3201843 minutes after Modified time - metadata may have been altered after the fact']\n",
+            "\n",
+            "All test cases passed.\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
