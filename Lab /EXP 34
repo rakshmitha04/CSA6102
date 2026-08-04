@@ -1,0 +1,142 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyPOcwIbDp2dx97se4vaaBPH",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/rakshmitha04/CSA6102/blob/main/Lab%20/EXP%2034\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "id": "u4722HlS_7lK"
+      },
+      "outputs": [],
+      "source": [
+        "import math\n",
+        "from collections import Counter\n",
+        "\n",
+        "def shannon_entropy(s):\n",
+        "    \"\"\"\n",
+        "    Calculate the Shannon entropy of a string.\n",
+        "    \"\"\"\n",
+        "    if not s:\n",
+        "        return 0.0\n",
+        "\n",
+        "    counts = Counter(s)\n",
+        "    length = len(s)\n",
+        "\n",
+        "    entropy = -sum(\n",
+        "        (count / length) * math.log2(count / length)\n",
+        "        for count in counts.values()\n",
+        "    )\n",
+        "\n",
+        "    return entropy\n",
+        "\n",
+        "\n",
+        "def detect_dns_tunneling(queries, length_threshold=20, entropy_threshold=3.5):\n",
+        "    \"\"\"\n",
+        "    Detect possible DNS tunneling based on\n",
+        "    long and high-entropy subdomains.\n",
+        "    \"\"\"\n",
+        "\n",
+        "    flagged = []\n",
+        "\n",
+        "    for query in queries:\n",
+        "\n",
+        "        label = query.split(\".\")[0]\n",
+        "\n",
+        "        entropy = shannon_entropy(label)\n",
+        "\n",
+        "        if len(label) >= length_threshold and entropy >= entropy_threshold:\n",
+        "\n",
+        "            flagged.append({\n",
+        "                \"query\": query,\n",
+        "                \"label_length\": len(label),\n",
+        "                \"entropy\": round(entropy, 2)\n",
+        "            })\n",
+        "\n",
+        "    return flagged"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def test_experiment6():\n",
+        "\n",
+        "    queries = [\n",
+        "        \"www.google.com\",\n",
+        "        \"mail.office365.com\",\n",
+        "        \"a8f3k2j9x1p7q4z6w0n5r2t8y3.exfil-domain.com\",\n",
+        "        \"vpn.corporate-network.com\",\n",
+        "        \"9c2e7b1a4f8d3c6e0a5b9d2f7c1e4a8b3d6f9c2e5a8b1d4f.tunnel.example.net\",\n",
+        "    ]\n",
+        "\n",
+        "    flagged = detect_dns_tunneling(queries)\n",
+        "\n",
+        "    print(\"Flagged DNS Queries:\")\n",
+        "    for item in flagged:\n",
+        "        print(item)\n",
+        "\n",
+        "    flagged_domains = [f[\"query\"] for f in flagged]\n",
+        "\n",
+        "    assert \"www.google.com\" not in flagged_domains\n",
+        "    assert \"mail.office365.com\" not in flagged_domains\n",
+        "    assert \"vpn.corporate-network.com\" not in flagged_domains\n",
+        "\n",
+        "    assert \"a8f3k2j9x1p7q4z6w0n5r2t8y3.exfil-domain.com\" in flagged_domains\n",
+        "\n",
+        "    assert \"9c2e7b1a4f8d3c6e0a5b9d2f7c1e4a8b3d6f9c2e5a8b1d4f.tunnel.example.net\" in flagged_domains\n",
+        "\n",
+        "    assert len(flagged) == 2\n",
+        "\n",
+        "    print(\"\\nAll test cases passed.\")\n",
+        "\n",
+        "\n",
+        "test_experiment6()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "ZiE8OEMaAGAz",
+        "outputId": "348886d3-559e-4394-e4ed-f6aa93e321b9"
+      },
+      "execution_count": 2,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Flagged DNS Queries:\n",
+            "{'query': 'a8f3k2j9x1p7q4z6w0n5r2t8y3.exfil-domain.com', 'label_length': 26, 'entropy': 4.47}\n",
+            "{'query': '9c2e7b1a4f8d3c6e0a5b9d2f7c1e4a8b3d6f9c2e5a8b1d4f.tunnel.example.net', 'label_length': 48, 'entropy': 3.92}\n",
+            "\n",
+            "All test cases passed.\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
