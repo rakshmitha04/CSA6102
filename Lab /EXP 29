@@ -1,0 +1,100 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyPIsbnhuiQxEKdTdlfTh9Cz",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/rakshmitha04/CSA6102/blob/main/Lab%20/EXP%2029\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 3,
+      "metadata": {
+        "id": "ZasVPaiu5RBK"
+      },
+      "outputs": [],
+      "source": [
+        "from datetime import datetime, timedelta\n",
+        "\n",
+        "def parse_time(t):\n",
+        "    return datetime.strptime(t, \"%Y-%m-%d %H:%M:%S\")\n",
+        "\n",
+        "def detect_bruteforce(events, threshold=5, window_minutes=2):\n",
+        "    # Sort events by timestamp\n",
+        "    events = sorted(events, key=lambda e: parse_time(e[\"timestamp\"]))\n",
+        "\n",
+        "    # Group events by account\n",
+        "    by_account = {}\n",
+        "    for event in events:\n",
+        "        account = event[\"account\"]\n",
+        "        if account not in by_account:\n",
+        "            by_account[account] = []\n",
+        "        by_account[account].append(event)\n",
+        "\n",
+        "    results = {}\n",
+        "\n",
+        "    # Check each account\n",
+        "    for account, acc_events in by_account.items():\n",
+        "\n",
+        "        failures = [e for e in acc_events if e[\"event_id\"] == 4625]\n",
+        "        successes = [e for e in acc_events if e[\"event_id\"] == 4624]\n",
+        "\n",
+        "        flagged = False\n",
+        "\n",
+        "        # Sliding window\n",
+        "        for i in range(len(failures)):\n",
+        "            start = parse_time(failures[i][\"timestamp\"])\n",
+        "            end = start + timedelta(minutes=window_minutes)\n",
+        "\n",
+        "            count = 0\n",
+        "            for f in failures:\n",
+        "                t = parse_time(f[\"timestamp\"])\n",
+        "                if start <= t <= end:\n",
+        "                    count += 1\n",
+        "\n",
+        "            if count >= threshold:\n",
+        "                flagged = True\n",
+        "                break\n",
+        "\n",
+        "        if flagged:\n",
+        "            success_after = False\n",
+        "\n",
+        "            if failures:\n",
+        "                last_failure = parse_time(failures[-1][\"timestamp\"])\n",
+        "\n",
+        "                for s in successes:\n",
+        "                    if parse_time(s[\"timestamp\"]) > last_failure:\n",
+        "                        success_after = True\n",
+        "                        break\n",
+        "\n",
+        "            results[account] = {\n",
+        "                \"failed_attempts\": len(failures),\n",
+        "                \"followed_by_success\": success_after,\n",
+        "                \"source_ips\": sorted(list(set(f[\"source_ip\"] for f in failures)))\n",
+        "            }\n",
+        "\n",
+        "    return results"
+      ]
+    }
+  ]
+}
