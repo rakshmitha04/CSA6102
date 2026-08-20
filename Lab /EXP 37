@@ -1,0 +1,90 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyMP3dks7so4ouWKR/10vP1C",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/rakshmitha04/CSA6102/blob/main/Lab%20/EXP%2037\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "id": "s9qzCf-lXPK-"
+      },
+      "outputs": [],
+      "source": [
+        "from datetime import datetime\n",
+        "from collections import Counter\n",
+        "\n",
+        "LOG_FMT = \"%Y-%m-%d %H:%M:%S\"\n",
+        "\n",
+        "\n",
+        "def build_baseline_ips(logs):\n",
+        "    \"\"\"Return {user: most_common_ip} based on all log activity.\"\"\"\n",
+        "    by_user = {}\n",
+        "\n",
+        "    for entry in logs:\n",
+        "        by_user.setdefault(entry[\"user\"], []).append(entry[\"ip\"])\n",
+        "\n",
+        "    return {\n",
+        "        user: Counter(ips).most_common(1)[0][0]\n",
+        "        for user, ips in by_user.items()\n",
+        "    }\n",
+        "\n",
+        "\n",
+        "def flag_anomalous_downloads(logs, business_start=8, business_end=20):\n",
+        "    baseline = build_baseline_ips(logs)\n",
+        "    flagged = []\n",
+        "\n",
+        "    for entry in logs:\n",
+        "\n",
+        "        # Check only download activities\n",
+        "        if entry[\"action\"] != \"download\":\n",
+        "            continue\n",
+        "\n",
+        "        # Convert timestamp into datetime object\n",
+        "        ts = datetime.strptime(entry[\"timestamp\"], LOG_FMT)\n",
+        "\n",
+        "        reasons = []\n",
+        "\n",
+        "        # Check IP address\n",
+        "        if entry[\"ip\"] != baseline.get(entry[\"user\"]):\n",
+        "            reasons.append(\"IP differs from user baseline\")\n",
+        "\n",
+        "        # Check business hours\n",
+        "        if not (business_start <= ts.hour < business_end):\n",
+        "            reasons.append(\"Outside business hours\")\n",
+        "\n",
+        "        # Flag if any anomaly is found\n",
+        "        if reasons:\n",
+        "            flagged.append({\n",
+        "                **entry,\n",
+        "                \"reasons\": reasons\n",
+        "            })\n",
+        "\n",
+        "    return flagged"
+      ]
+    }
+  ]
+}
