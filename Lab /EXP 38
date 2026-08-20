@@ -1,0 +1,71 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyMJ3k3FcqueMrV1rfRdLyme",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/rakshmitha04/CSA6102/blob/main/Lab%20/EXP%2038\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "id": "OaXx3XHNYb_J"
+      },
+      "outputs": [],
+      "source": [
+        "import hashlib\n",
+        "import math\n",
+        "from collections import Counter\n",
+        "\n",
+        "\n",
+        "def sha256_hash(data: bytes) -> str:\n",
+        "    return hashlib.sha256(data).hexdigest()\n",
+        "\n",
+        "\n",
+        "def byte_entropy(data: bytes) -> float:\n",
+        "    if not data:\n",
+        "        return 0.0\n",
+        "\n",
+        "    counts = Counter(data)\n",
+        "    length = len(data)\n",
+        "\n",
+        "    return -sum(\n",
+        "        (c / length) * math.log2(c / length)\n",
+        "        for c in counts.values()\n",
+        "    )\n",
+        "\n",
+        "\n",
+        "def static_analyze(data: bytes, entropy_threshold=7.5):\n",
+        "    entropy = byte_entropy(data)\n",
+        "\n",
+        "    return {\n",
+        "        \"sha256\": sha256_hash(data),\n",
+        "        \"size_bytes\": len(data),\n",
+        "        \"entropy\": round(entropy, 2),\n",
+        "        \"likely_packed\": entropy >= entropy_threshold\n",
+        "    }"
+      ]
+    }
+  ]
+}
